@@ -7,6 +7,7 @@ using clawSoft.clawPDF.Core.Ghostscript.OutputDevices;
 using clawSoft.clawPDF.Core.Settings;
 using clawSoft.clawPDF.Core.Settings.Enums;
 using clawSoft.clawPDF.PDFProcessing;
+using Newtonsoft.Json;
 using SystemInterface.IO;
 using SystemWrapper.IO;
 
@@ -69,22 +70,8 @@ namespace clawSoft.clawPDF.Core.Jobs
             DirectoryWrap.CreateDirectory(JobTempOutputFolder);
 
             // Shorten the temp folder for GS compatibility
+            //缩短临时文件夹以实现GS兼容性
             JobTempFolder = JobTempFolder;
-
-            ///打印开始更新打印文件信息到注册表
-            ///
-           /*
-            FileName.Init();
-            OutFileName = FileName.getFileNnameNoPrint();
-            if (!string.IsNullOrEmpty(OutFileName))
-            {
-                JobId = System.Guid.NewGuid().ToString();
-                FileName.modifyFileInfoByFileName(OutFileName, FileName.JobId, JobId);
-                FileName.modifyFileInfoByFileName(OutFileName, FileName.PrintState, "1");
-                FileName.modifyFileInfoByFileName(OutFileName, FileName.StartTime, FileName.StartTime);
-                FileName.modifyFileInfoByFileName(OutFileName, FileName.EndTime, "");
-            }
-            */
 
         }
 
@@ -180,6 +167,7 @@ namespace clawSoft.clawPDF.Core.Jobs
                 Logger.Debug("Starting Ghostscript Job");
 
                 OutputDevice device;
+                Logger.Info("转换输出格式：" + Profile.OutputFormat.ToString());
                 switch (Profile.OutputFormat)
                 {
                     case OutputFormat.PdfA1B:
@@ -208,7 +196,8 @@ namespace clawSoft.clawPDF.Core.Jobs
                     default:
                         throw new Exception("Illegal OutputFormat specified");
                 }
-
+                Logger.Info("转换输出路径：" + JobTempFolder);
+                Logger.Info("转换驱动信息：" + JsonConvert.SerializeObject(device));
                 Logger.Trace("Output format is: {0}", Profile.OutputFormat.ToString());
 
                 _ghostScript.Output += Ghostscript_Logging;

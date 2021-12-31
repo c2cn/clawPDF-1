@@ -29,7 +29,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "clawPDF_setup", "clawPDF_se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clawPDF.Bridge", "clawPDF.Bridge\clawPDF.Bridge.csproj", "{004B582A-0CDC-4E19-9DB2-AF83506A4460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGPrinter.Service", "clawPDF.Service\YGPrinter.Service.csproj", "{6B40094E-B93D-4EEE-8849-79B64FA256FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clawPDF.Service", "clawPDF.Service\clawPDF.Service.csproj", "{6B40094E-B93D-4EEE-8849-79B64FA256FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

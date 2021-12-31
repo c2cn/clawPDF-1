@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using clawSoft.clawPDF.Core.Actions;
 using clawSoft.clawPDF.Core.Ghostscript.OutputDevices;
 using clawSoft.clawPDF.Core.Settings;
@@ -36,6 +34,7 @@ namespace clawSoft.clawPDF.Core.Jobs
 
         private string _outfilebody;
 
+
         protected AbstractJob(IJobInfo jobInfo, ConversionProfile profile, JobTranslations jobTranslations)
             : this(jobInfo, profile, jobTranslations, new FileWrap(), new DirectoryWrap())
         {
@@ -61,24 +60,9 @@ namespace clawSoft.clawPDF.Core.Jobs
             Profile = profile;
             TokenReplacer = GetTokenReplacer(); //important for testing without workflow
 
-            //设置打印文件信息到注册表
-            FileName.Init();
-            string filename = "";
-            FileInfo info = FileName.getFileInfoNoPrint();
-            if (null != info && !string.IsNullOrEmpty(info.Name))
-            {
-                Logger.Debug("匹配打印文件名成功" + info.Name);
-                JobId = System.Guid.NewGuid().ToString();
-                info.JobId = JobId;
-                info.PrintState = "1";
-                info.EndTime = "";
-                FileName.modifyFileInfo(info);
-                OutFileName = info.Name;
-            }
-           
         }
 
-        
+
 
         /// <summary>
         ///     Actions that will be executed after converting the job
@@ -90,6 +74,9 @@ namespace clawSoft.clawPDF.Core.Jobs
         public string JobId { get; set; }
 
         public string OutFileName { get; set; }
+
+        public bool IsRegEdit { get; set; }
+
 
         /// <summary>
         ///     An Error message with an internal state of what went wrong. May be untranslated.
@@ -132,6 +119,7 @@ namespace clawSoft.clawPDF.Core.Jobs
         ///     Automatically clean up input files after the job has been processed
         /// </summary>
         public bool AutoCleanUp { get; set; }
+
 
         /// <summary>
         ///     The number of copies requested for the print job
@@ -276,11 +264,34 @@ namespace clawSoft.clawPDF.Core.Jobs
         {
             var outputFilename =
                 FileUtil.Instance.MakeValidFileName(TokenReplacer.ReplaceTokens(Profile.FileNameTemplate));
-            if (string.IsNullOrEmpty(outputFilename))
+            if (JobInfo.IsRegedit == 0)
             {
-                TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                outputFilename = Convert.ToInt64(ts.TotalSeconds).ToString();
+                if (string.IsNullOrEmpty(outputFilename))
+                {
+                    TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                    outputFilename = Convert.ToInt64(ts.TotalMilliseconds).ToString();
+                }
             }
+            if (JobInfo.IsRegedit == 1)
+            {
+                outputFilename = OutFileName;
+                if (string.IsNullOrEmpty(outputFilename))
+                {
+                    TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                    outputFilename = Convert.ToInt64(ts.TotalMilliseconds).ToString();
+                }
+            }
+            if (JobInfo.IsRegedit == 2)
+            {
+                if (string.IsNullOrEmpty(outputFilename)
+        ||          outputFilename.Contains("YGReport")
+        ||          outputFilename.Contains("document"))
+                {
+                    TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                    outputFilename = Convert.ToInt64(ts.TotalMilliseconds).ToString();
+                }
+            }
+    
 
             switch (Profile.OutputFormat)
             {
@@ -734,5 +745,7 @@ namespace clawSoft.clawPDF.Core.Jobs
                 Logger.Warn("Could not delete temporary file \"" + tempfile + "\"");
             }
         }
+
+
     }
 }

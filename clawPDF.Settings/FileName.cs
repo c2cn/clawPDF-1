@@ -129,12 +129,19 @@ namespace clawSoft.clawPDF.Core.Settings
         /// <param name="fileInfo"></param>
         public static void modifyFileInfo(FileInfo fileInfo)
         {
-           data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.StartTime, fileInfo.StartTime);
-           data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.EndTime, fileInfo.EndTime);
-           data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.PrintState, fileInfo.PrintState);
-           data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.JobId, fileInfo.JobId);
-           storage.SetData(data);
-           storage.WriteData();
+            try
+            {
+                data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.StartTime, fileInfo.StartTime);
+                data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.EndTime, fileInfo.EndTime);
+                data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.PrintState, fileInfo.PrintState);
+                data.SetValue(@"" + fileInfo.Name + "\\" + @"" + FileName.JobId, fileInfo.JobId);
+                storage.SetData(data);
+                storage.WriteData();
+            }
+            catch (Exception e)
+            {
+                Logger.Info("修改打印信息异常 " + e);
+            }
         }
 
         /// <summary>
